@@ -11257,7 +11257,11 @@ ARMVAParameters aa64_va_parameters(CPUARMState *env, uint64_t va,
         }
         epd = false;
         sh = extract32(tcr, 12, 2);
-        ps = extract32(tcr, 16, 3);
+        /* The PS field is needed from VTCR_EL2. This fixed in v7.1.0. */
+        if (mmu_idx == ARMMMUIdx_Stage2_S)
+            ps = extract32(env->cp15.vtcr_el2.raw_tcr, 16, 3);
+        else
+            ps = extract32(tcr, 16, 3);
         ds = extract64(tcr, 32, 1);
     } else {
         /*
